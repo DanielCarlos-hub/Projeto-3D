@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Projeto-3d" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Projeto-3d" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="C:/Program Files (x86)/CodeBlocks/MinGW/bin" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Projeto-3d" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="C:/Program Files (x86)/CodeBlocks/MinGW/bin" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="C:/Program Files (x86)/CodeBlocks/MinGW/include" />
+		</Compiler>
+		<Linker>
+			<Add library="glut32" />
+			<Add library="opengl32" />
+			<Add library="glu32" />
+			<Add library="winmm" />
+			<Add library="gdi32" />
+			<Add directory="C:/Program Files (x86)/CodeBlocks/MinGW/lib" />
+		</Linker>
+		<Unit filename="imageloader.cpp" />
+		<Unit filename="imageloader.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="texturas/DisplaceIT_Ground_Pebble1_Description.txt" />
+		<Unit filename="texturas/DisplaceIT_Ground_Pebble1_Displace.bmp" />
+		<Unit filename="texturas/DisplaceIT_Ground_Pebble1_Render.jpg" />
+		<Unit filename="texturas/FiberGlassBW.bmp" />
+		<Unit filename="texturas/Grass.bmp" />
+		<Unit filename="texturas/PoolWaterBump.bmp" />
+		<Unit filename="texturas/agua.bmp" />
+		<Unit filename="texturas/green_slime.BMP" />
+		<Unit filename="texturas/janela.bmp" />
+		<Unit filename="texturas/montanha.bmp" />
+		<Unit filename="texturas/pedras1.bmp" />
+		<Unit filename="texturas/porta.bmp" />
+		<Unit filename="texturas/road1.bmp" />
+		<Unit filename="texturas/sky.bmp" />
+		<Unit filename="texturas/sol.bmp" />
+		<Unit filename="texturas/telhado.bmp" />
+		<Unit filename="texturas/terra.bmp" />
+		<Unit filename="texturas/tijolo.bmp" />
+		<Unit filename="texturas/water.bmp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
