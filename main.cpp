@@ -1,9 +1,9 @@
+/*GRUPO: Daniel, Marcos, Ralf */
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctime>
 #include <GL/glut.h>
 #include "imageloader.h"
-
 
 GLfloat fAspect;
 GLfloat rotX, rotY, rotX_ini, rotY_ini;
@@ -22,7 +22,7 @@ GLfloat pontos[4][4][3] = {
 };
 
 GLUquadric *quad1, *quad2;
-GLuint _textureTijolo, _texturePorta, _textureTelhado, _textureJanela, _textureCeu, _textureTerreno, _textureEstrada, _textureTerra, _textureSol, _textureMontanha;
+GLuint _textureTijolo, _texturePorta, _textureTelhado, _textureJanela, _textureCeu, _textureTerreno, _textureEstrada, _texturaRoad, _textureSol, _textureMontanha;
 
 GLboolean proj = true; //T = projeção perspectiva. F = projeção ortográfica
 GLfloat angulo;
@@ -42,23 +42,23 @@ int luz = 0;
 
 // Posição de cada luz
 GLfloat posLuz[1][4] = {
-	{ 0, 0, -120.0, 0 }
+	{ 0, -30, -180, 1 }
 	//{   0, 10, -5, 1 }
 };
 
 // Direção de cada luz
 GLfloat dirLuz[1][3] = {
-	{ 0,-1,1 }
+	{ 0,-1,0 }
 };
 
 // Cor difusa de cada luz
 GLfloat luzDifusa[1][4] = {
-	{ 1,1,0,0},
+	{ 1,0.85,0,0},
 };
 
 // Cor especular de cada luz
 GLfloat luzEspecular[1][4] = {
-	{ 0,-1,0,1 }
+	{ 0,-1,0,0 }
 };
 
 // Define um vértice
@@ -81,41 +81,64 @@ struct OBJ{
 
 // Definição dos vértices
 VERT vertices[] = {
-    {1,1,1}, //0
-    {-1,1,1}, //1
-    {-1,-1,1}, //2
-    {1,-1,1}, //3
-    {1,-1,-1}, //4
-    {1,1,-1}, //5
-    {-1,1,-1}, //6
-    {-1,-1,-1}  //7
+    {48,2,0.5}, //0
+    {-48,2,0.5}, //1
+    {-48,-2,0.5}, //2
+    {48,-2,0.5}, //3
+    {48,-2,-0.5}, //4
+    {48,2,-0.5}, //5
+    {-48,2,-0.5}, //6
+    {-48,-2,-0.5}  //7
 };
+
 // Definição das faces
 FACE faces[] = {
-    { 4, {1, 2, 5, 4}},	// base
-    { 4, {1, 2, 7, 6}}, // frente
-	{ 4, {5, 4, 8, 9}}, // trás
-	{ 3, {1, 6, 0}},	// frente esq
-	{ 3, {0, 8, 4}}, // trás esq
-	{ 3, {2, 3, 7}}, // frente dir
-	{ 3, {3, 5, 9}}, // trás dir
-	{ 3, {1, 4, 0}}, // esq
-	{ 3, {5, 2, 3}}, // dir
+	{ 4, { 0,1,2,3 }},
+	{ 4, { 0,3,4,5 }},
+	{ 4, { 0,5,6,1 }},
+	{ 4, { 1,6,7,2 }},
+	{ 4, { 7,4,3,2 }},
+	{ 4, { 4,7,6,5 }}
 };
 
-// Finalmente, define o objeto cubo
-OBJ cubo = {
-	vertices, faces, 9
+// Finalmente, define o objeto pirâmide
+OBJ muro = {
+	vertices, faces, 5
 };
 
+
+// Definição dos vértices
+VERT vertices2[] = {
+    {23,2,0.5}, //0
+    {-23,2,0.5}, //1
+    {-23,-2,0.5}, //2
+    {23,-2,0.5}, //3
+    {23,-2,-0.5}, //4
+    {23,2,-0.5}, //5
+    {-23,2,-0.5}, //6
+    {-23,-2,-0.5}  //7
+};
+
+// Definição das faces
+FACE faces2[] = {
+	{ 4, { 0,1,2,3 }},
+	{ 4, { 0,3,4,5 }},
+	{ 4, { 0,5,6,1 }},
+	{ 4, { 1,6,7,2 }},
+	{ 4, { 7,4,3,2 }},
+	{ 4, { 4,7,6,5 }}
+};
+OBJ muro2 = {
+	vertices2, faces2, 5
+};
 // Função responsável pela especificação dos parâmetros de iluminaç¿o
 void DefineIluminacao (void)
 {
-	GLfloat luzAmbiente[4]={0.25,0.25,0.25,1.0};
+	GLfloat luzAmbiente[4]={0.1,0.1,0.1,1.0};
 
 	// Capacidade de brilho do material
 	GLfloat especularidade[4]={1.0,1.0,1.0,1.0};
-	GLint especMaterial = 150;
+	GLint especMaterial = 90;
 
 	// Define a refletância do material
 	glMaterialfv(GL_FRONT,GL_SPECULAR, especularidade);
@@ -133,36 +156,54 @@ void DefineIluminacao (void)
 		glLightfv(GL_LIGHT0+i, GL_SPECULAR, luzEspecular[i] );
 		glLightfv(GL_LIGHT0+i, GL_POSITION, posLuz[i] );
 		glLightfv(GL_LIGHT0+i,GL_SPOT_DIRECTION,dirLuz[i]);
-		glLightf(GL_LIGHT0+i,GL_SPOT_CUTOFF,60.0);
-		glLightf(GL_LIGHT0+i,GL_SPOT_EXPONENT,30.0);
+		glLightf(GL_LIGHT0+i,GL_SPOT_CUTOFF,90.0);
+		glLightf(GL_LIGHT0+i,GL_SPOT_EXPONENT,0.0);
 	}
 }
 
-// Desenha um cubo
-void DesenhaCaixa(OBJ *objeto)
+// Desenha um muro
+void DesenhaMuro(OBJ *objeto)
 {
     glPushMatrix();
     glEnable(GL_TEXTURE_2D);
 	for(int f=0; f < objeto->total_faces; f++)
 	{
-	    if(f==0)
-	    glColor3f(0,0,0);
+
+	    if(f==0){
+            glBindTexture(GL_TEXTURE_2D, _textureEstrada);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	    }
 	    if(f==1)
-	    glColor3f(1,0,0);
+        {
+            glBindTexture(GL_TEXTURE_2D, _textureEstrada);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	    }
 	    if(f==2)
-	    glColor3f(0,1,0);
+        {
+            glBindTexture(GL_TEXTURE_2D, _textureEstrada);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	    }
 	    if(f==3)
-	    glColor3f(0,0,1);
+        {
+            glBindTexture(GL_TEXTURE_2D, _textureEstrada);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	    }
 	    if(f==4)
-	    glColor3f(1,1,0);
+        {
+            glBindTexture(GL_TEXTURE_2D, _textureEstrada);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	    }
 	    if(f==5)
-	    glColor3f(0,1,1);
-	    if(f==6)
-	    glColor3f(1,0,1);
-	    if(f==7)
-	    glColor3f(0.59,0.29,0);
-	    if(f==8)
-	    glColor3f(0.29,0.0,0.59);
+        {
+            glBindTexture(GL_TEXTURE_2D, _textureEstrada);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	    }
 		glBegin(GL_POLYGON);
 		// Percorre todos os vértices da face
 		for(int v=0; v < objeto->faces[f].total; v++)
@@ -176,7 +217,7 @@ void DesenhaCaixa(OBJ *objeto)
 
 
 
-void desenhaCilindro(float height,float Base){
+void DesenhaTronco(float height,float Base){
     GLUquadricObj *qobj;
     qobj = gluNewQuadric();
 
@@ -186,10 +227,10 @@ void desenhaCilindro(float height,float Base){
     glPopMatrix();
 }
 
-void desenhaArvore(float height,float Base){
+void DesenhaArvore(float height,float Base){
 
     glPushMatrix();
-        desenhaCilindro(height, Base);
+        DesenhaTronco(height, Base);
         glTranslatef(0.0f, height,0.0f);
         height -=height*0.2f;
         Base -=Base*0.5f;
@@ -206,7 +247,7 @@ void desenhaArvore(float height,float Base){
                 else
                     glRotatef(angle2, 0.0f, 1.0f, 1.0f);
                 flag = !flag;
-                desenhaArvore(height, Base); //chamada recursiva
+                DesenhaArvore(height, Base); //chamada recursiva
                 glPopMatrix();
             }
             else
@@ -225,26 +266,160 @@ void DesenhaEstrada(){
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBegin(GL_QUADS);
-            glTexCoord3f(0.0,1.0,0.1);  glVertex3f(-0.7,0.25,-6);
-            glTexCoord3f(1.0,1.0,0.1);  glVertex3f(0.7,0.25,-6);
-            glTexCoord3f(1.0,0.0,0.1);  glVertex3f(0.7,0.25,6);
-            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(-0.7,0.25,6);
+            glTexCoord3f(0.0,1.0,0.6);  glVertex3f(-0.7,0.25,-10);
+            glTexCoord3f(1.0,1.0,0.6);  glVertex3f(0.7,0.25,-10);
+            glTexCoord3f(1.0,0.0,0.1);  glVertex3f(0.7,0.25,10);
+            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(-0.7,0.25,10);
         glEnd();
     glPopMatrix();
 }
 
-void DesenhaTerra(){
+void DesenhaRodovia(){
     glPushMatrix();
-        glBindTexture(GL_TEXTURE_2D, _textureTerra);
+        glBindTexture(GL_TEXTURE_2D, _texturaRoad);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBegin(GL_QUADS);
-            glTexCoord3f(0.0,1.0,0.1);  glVertex3f(-45,0.25,-8.5);
-            glTexCoord3f(1.0,1.0,0.1);  glVertex3f(45,0.25,-8.5);
-            glTexCoord3f(1.0,0.0,0.1);  glVertex3f(45,0.25,8.5);
-            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(-45,0.25,8.5);
+            glTexCoord3f(0.0,1.0,0.1);  glVertex3f(-140,0.25,-10);
+            glTexCoord3f(1.0,1.0,0.1);  glVertex3f(140,0.25,-10);
+            glTexCoord3f(1.0,0.0,0.1);  glVertex3f(140,0.25,10);
+            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(-140,0.25,10);
         glEnd();
     glPopMatrix();
+}
+
+void DesenhaCasa(){
+// Lado da Frente da casa
+    glPushMatrix();
+        glBindTexture(GL_TEXTURE_2D, _textureTijolo);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //glRotatef(angulo, 0.0, 1.0, 0.0);
+        glBegin(GL_QUADS);  // Parede
+            glTexCoord3f(0.0,2.0,0.1);  glVertex3f(-4,1,1);
+            glTexCoord3f(4.0,2.0,0.1);  glVertex3f(4,1,1);
+            glTexCoord3f(4.0,0.0,0.1);  glVertex3f(4,-1.5,1);
+            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(-4,-1.5,1);
+        glEnd();
+
+        glBindTexture(GL_TEXTURE_2D, _textureTelhado);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBegin(GL_QUADS);  // Telhado
+            glTexCoord3f(0.0,2.0,0); glVertex3f(-4.4,1.5,-0.5);
+            glTexCoord3f(4.0,2.0,0);glVertex3f(4.4,1.5,-0.5);
+            glTexCoord3f(4.0,0.0,1.25); glVertex3f(4.4,0.6,2.2);
+            glTexCoord3f(0.0,0.0,1.25); glVertex3f(-4.4,0.6,2.2);
+        glEnd();
+
+        glBindTexture(GL_TEXTURE_2D, _texturePorta);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBegin(GL_QUADS);  // Porta
+            glTexCoord3f(0.0,1.0,1.0001); glVertex3f(-0.3,0.0,1.0001);
+            glTexCoord3f(1.0,1.0,1.0001); glVertex3f(0.4,0.0,1.0001);
+            glTexCoord3f(1.0,0.0,1.0001); glVertex3f(0.4,-1.5,1.0001);
+            glTexCoord3f(0.0,0.0,1.0001); glVertex3f(-0.3,-1.5,1.0001);
+        glEnd();
+
+        glBindTexture(GL_TEXTURE_2D, _textureJanela);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBegin(GL_QUADS);  // Janela Esquerda
+            glTexCoord3f(0.0,1.0,1.0001); glVertex3f(-1.5,0.3,1.0001);
+            glTexCoord3f(1.0,1.0,1.0001); glVertex3f(-0.75,0.3,1.0001);
+            glTexCoord3f(1.0,0.0,1.0001); glVertex3f(-0.75,-0.2,1.0001);
+            glTexCoord3f(0.0,0.0,1.0001); glVertex3f(-1.5,-0.2,1.0001);
+        glEnd();
+
+        glBegin(GL_QUADS);  // Janela Direita
+            glTexCoord3f(0.0,1.0,1.0001); glVertex3f(1.5,0.3,1.0001);
+            glTexCoord3f(1.0,1.0,1.0001); glVertex3f(0.75,0.3,1.0001);
+            glTexCoord3f(1.0,0.0,1.0001); glVertex3f(0.75,-0.2,1.0001);
+            glTexCoord3f(0.0,0.0,1.0001); glVertex3f(1.5,-0.2,1.0001);
+        glEnd();
+    glPopMatrix();
+
+    // Lado de tras da casa
+    glPushMatrix();
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, _textureTijolo);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBegin(GL_QUADS);  // Parede
+            glTexCoord3f(0.0,2.0,-1);  glVertex3f(-4,1,-2);
+            glTexCoord3f(4.0,2.0,-1);  glVertex3f(4,1,-2);
+            glTexCoord3f(4.0,0.0,-1);  glVertex3f(4,-1.5,-2);
+            glTexCoord3f(0.0,0.0,-1);  glVertex3f(-4,-1.5,-2);
+        glEnd();
+
+        glBindTexture(GL_TEXTURE_2D, _textureTelhado);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBegin(GL_QUADS);  // Telhado
+            glTexCoord3f(0.0,2.0,0); glVertex3f(-4.4,1.5,-0.5);
+            glTexCoord3f(4.0,2.0,0);glVertex3f(4.4,1.5,-0.5);
+            glTexCoord3f(4.0,0.0,-1.25); glVertex3f(4.4,0.7,-3.0);
+            glTexCoord3f(0.0,0.0,-1.25); glVertex3f(-4.4,0.7,-3.0);
+        glEnd();
+
+        glBindTexture(GL_TEXTURE_2D, _textureJanela);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBegin(GL_QUADS);  // Janela Esquerda
+            glTexCoord3f(0.0,1.0,-1.0001); glVertex3f(-1.5,0.2,-2.0001);
+            glTexCoord3f(1.0,1.0,-1.0001); glVertex3f(-0.75,0.2,-2.0001);
+            glTexCoord3f(1.0,0.0,-1.0001); glVertex3f(-0.75,-0.3,-2.0001);
+            glTexCoord3f(0.0,0.0,-1.0001); glVertex3f(-1.5,-0.3,-2.0001);
+        glEnd();
+
+        glBegin(GL_QUADS);  // Janela Direita
+            glTexCoord3f(0.0,1.0,1.0001); glVertex3f(1.5,0.2,-2.0001);
+            glTexCoord3f(1.0,1.0,1.0001); glVertex3f(0.75,0.2,-2.0001);
+            glTexCoord3f(1.0,0.0,1.0001); glVertex3f(0.75,-0.3,-2.0001);
+            glTexCoord3f(0.0,0.0,1.0001); glVertex3f(1.5,-0.3,-2.0001);
+        glEnd();
+    glPopMatrix();
+
+    // Lado direito da casa
+    glPushMatrix();
+        glBindTexture(GL_TEXTURE_2D, _textureTijolo);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBegin(GL_QUADS);  // Parede
+            glTexCoord3f(0.0,2.0,1); glVertex3f(4,1,1);
+            glTexCoord3f(2.0,2.0,-1); glVertex3f(4,1,-2);
+            glTexCoord3f(2.0,0.0,-1); glVertex3f(4,-1.5,-2);
+            glTexCoord3f(0.0,0.0,1); glVertex3f(4,-1.5,1);
+        glEnd();
+
+        glBegin(GL_TRIANGLES);  // Parede de cima
+            glTexCoord3f(0.0,1.0,0); glVertex3f(4,1.5,-0.5);
+            glTexCoord3f(1.0,0.0,1); glVertex3f(4,1,1);
+            glTexCoord3f(-1.0,0.0,-1); glVertex3f(4,1,-2);
+        glEnd();
+    glPopMatrix();
+
+    // Lado Esquerdo da casa
+    glPushMatrix();
+        glBindTexture(GL_TEXTURE_2D, _textureTijolo);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glBegin(GL_QUADS);  // Parede
+            glTexCoord3f(0.0,2.0,1);    glVertex3f(-4,1,1);
+            glTexCoord3f(2.0,2.0,-1);    glVertex3f(-4,1,-2);
+            glTexCoord3f(2.0,0.0,-1);    glVertex3f(-4,-1.5,-2);
+            glTexCoord3f(0.0,0.0,1);    glVertex3f(-4,-1.5,1);
+        glEnd();
+
+        glBegin(GL_TRIANGLES);  // Parede de cima
+            glTexCoord3f(0.0,1.0,0);    glVertex3f(-4,1.5,-0.5);
+            glTexCoord3f(1.0,0.0,1);    glVertex3f(-4,1,1);
+            glTexCoord3f(-1.0,0.0,-1);  glVertex3f(-4,1,-2);
+        glEnd();
+    glPopMatrix();
+
 }
 
 void PosicionaObservador(void)
@@ -316,54 +491,54 @@ void Desenha(void) {
 	// Altera a cor do desenho para branco
 	glColor3f(1,1,1);
 
-    // Ceu
+    /// Ceu
     glPushMatrix();
         glBindTexture(GL_TEXTURE_2D, _textureCeu);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        //Ceu frente
+        /// Ceu frente
         glTranslatef(0,0,-6);
         glBegin(GL_QUADS);
-            glTexCoord3f(0.0,1.0,0.1);  glVertex3f(-100,140,-80);
-            glTexCoord3f(1.0,1.0,0.1);  glVertex3f(100,140,-80);
-            glTexCoord3f(1.0,0.0,0.1);  glVertex3f(100,-10,-80);
-            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(-100,-10,-80);
+            glTexCoord3f(0.0,1.0,0.1);  glVertex3f(-140,140,-140);
+            glTexCoord3f(1.0,1.0,0.1);  glVertex3f(140,140,-140);
+            glTexCoord3f(1.0,0.0,0.1);  glVertex3f(140,-10,-140);
+            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(-140,-10,-140);
         glEnd();
-        //Ceu cima
+        /// Ceu cima
         glTranslatef(0,0,-6);
         glBegin(GL_QUADS);
-            glTexCoord3f(0.0,1.0,0.1);  glVertex3f(-100,140,-100);
-            glTexCoord3f(1.0,1.0,0.1);  glVertex3f(100,140,-100);
-            glTexCoord3f(1.0,0.0,0.1);  glVertex3f(100,140,100);
-            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(-100,140,100);
+            glTexCoord3f(0.0,1.0,0.1);  glVertex3f(-140,140,-140);
+            glTexCoord3f(1.0,1.0,0.1);  glVertex3f(140,140,-140);
+            glTexCoord3f(1.0,0.0,0.1);  glVertex3f(140,140,140);
+            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(-140,140,140);
         glEnd();
-        //Ceu dir.
+        /// Ceu dir.
         glTranslatef(0,0,-6);
         glBegin(GL_QUADS);
-            glTexCoord3f(0.0,1.0,0.1);  glVertex3f(100,140,-100);
-            glTexCoord3f(1.0,1.0,0.1);  glVertex3f(100,140,120);
-            glTexCoord3f(1.0,0.0,0.1);  glVertex3f(100,-10,120);
-            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(100,-10,-100);
+            glTexCoord3f(0.0,1.0,0.1);  glVertex3f(140,140,-140);
+            glTexCoord3f(1.0,1.0,0.1);  glVertex3f(140,140,160);
+            glTexCoord3f(1.0,0.0,0.1);  glVertex3f(140,-10,160);
+            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(140,-10,-140);
         glEnd();
-        //Ceu esq.
+        /// Ceu esq.
         glTranslatef(0,0,-6);
         glBegin(GL_QUADS);
-            glTexCoord3f(0.0,1.0,0.1);  glVertex3f(-100,140,-100);
-            glTexCoord3f(1.0,1.0,0.1);  glVertex3f(-100,140,120);
-            glTexCoord3f(1.0,0.0,0.1);  glVertex3f(-100,-10,120);
-            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(-100,-10,-100);
+            glTexCoord3f(0.0,1.0,0.1);  glVertex3f(-140,140,-140);
+            glTexCoord3f(1.0,1.0,0.1);  glVertex3f(-140,140,160);
+            glTexCoord3f(1.0,0.0,0.1);  glVertex3f(-140,-10,160);
+            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(-140,-10,-140);
         glEnd();
-        //Ceu tras.
+        /// Ceu tras.
         glTranslatef(0,0,-6);
         glBegin(GL_QUADS);
-            glTexCoord3f(0.0,1.0,0.1);  glVertex3f(-100,140,100);
-            glTexCoord3f(1.0,1.0,0.1);  glVertex3f(100,140,100);
-            glTexCoord3f(1.0,0.0,0.1);  glVertex3f(100,-10,100);
-            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(-100,-10,100);
+            glTexCoord3f(0.0,1.0,0.1);  glVertex3f(-140,140,140);
+            glTexCoord3f(1.0,1.0,0.1);  glVertex3f(140,140,140);
+            glTexCoord3f(1.0,0.0,0.1);  glVertex3f(140,-10,140);
+            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(-140,-10,140);
         glEnd();
     glPopMatrix();
 
-    // Terreno
+    /// Terreno
     glPushMatrix();
         glBindTexture(GL_TEXTURE_2D, _textureTerreno);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -371,174 +546,148 @@ void Desenha(void) {
         glTranslatef(0,0,-6);
         //glRotatef(angulo, 0.0, 1.0, 0.0);
         glBegin(GL_QUADS);
-            glTexCoord3f(0.0,70.0,1);  glVertex3f(-100,-1.5,100);
-            glTexCoord3f(0.0,0.0,-1);  glVertex3f(-100,-1.5,-100);
-            glTexCoord3f(70.0,0.0,-1);  glVertex3f(100,-1.5,-100);
-            glTexCoord3f(70.0,70.0,1);  glVertex3f(100,-1.5,100);
+            glTexCoord3f(0.0,70.0,1);  glVertex3f(-140,-1.5,140);
+            glTexCoord3f(0.0,0.0,-1);  glVertex3f(-140,-1.5,-140);
+            glTexCoord3f(70.0,0.0,-1);  glVertex3f(140,-1.5,-140);
+            glTexCoord3f(70.0,70.0,1);  glVertex3f(140,-1.5,140);
         glEnd();
     glPopMatrix();
-
-    // Lado da Frente da casa
+///INICIO
+///Conjuntos de CASAS da esquerda
+    ///Desenha Muro Esquerda
     glPushMatrix();
-        glBindTexture(GL_TEXTURE_2D, _textureTijolo);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTranslatef(0,0,-6);
-        //glRotatef(angulo, 0.0, 1.0, 0.0);
-        glBegin(GL_QUADS);  // Parede
-            glTexCoord3f(0.0,2.0,0.1);  glVertex3f(-4,1,1);
-            glTexCoord3f(4.0,2.0,0.1);  glVertex3f(4,1,1);
-            glTexCoord3f(4.0,0.0,0.1);  glVertex3f(4,-1.5,1);
-            glTexCoord3f(0.0,0.0,0.1);  glVertex3f(-4,-1.5,1);
-        glEnd();
-
-        glBindTexture(GL_TEXTURE_2D, _textureTelhado);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBegin(GL_QUADS);  // Telhado
-            glTexCoord3f(0.0,2.0,0); glVertex3f(-4.4,1.5,-0.5);
-            glTexCoord3f(4.0,2.0,0);glVertex3f(4.4,1.5,-0.5);
-            glTexCoord3f(4.0,0.0,1.25); glVertex3f(4.4,0.6,2.2);
-            glTexCoord3f(0.0,0.0,1.25); glVertex3f(-4.4,0.6,2.2);
-        glEnd();
-
-        glBindTexture(GL_TEXTURE_2D, _texturePorta);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBegin(GL_QUADS);  // Porta
-            glTexCoord3f(0.0,1.0,1.0001); glVertex3f(-0.3,0.0,1.0001);
-            glTexCoord3f(1.0,1.0,1.0001); glVertex3f(0.4,0.0,1.0001);
-            glTexCoord3f(1.0,0.0,1.0001); glVertex3f(0.4,-1.5,1.0001);
-            glTexCoord3f(0.0,0.0,1.0001); glVertex3f(-0.3,-1.5,1.0001);
-        glEnd();
-
-        glBindTexture(GL_TEXTURE_2D, _textureJanela);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBegin(GL_QUADS);  // Janela Esquerda
-            glTexCoord3f(0.0,1.0,1.0001); glVertex3f(-1.5,0.3,1.0001);
-            glTexCoord3f(1.0,1.0,1.0001); glVertex3f(-0.75,0.3,1.0001);
-            glTexCoord3f(1.0,0.0,1.0001); glVertex3f(-0.75,-0.2,1.0001);
-            glTexCoord3f(0.0,0.0,1.0001); glVertex3f(-1.5,-0.2,1.0001);
-        glEnd();
-
-        glBegin(GL_QUADS);  // Janela Direita
-            glTexCoord3f(0.0,1.0,1.0001); glVertex3f(1.5,0.3,1.0001);
-            glTexCoord3f(1.0,1.0,1.0001); glVertex3f(0.75,0.3,1.0001);
-            glTexCoord3f(1.0,0.0,1.0001); glVertex3f(0.75,-0.2,1.0001);
-            glTexCoord3f(0.0,0.0,1.0001); glVertex3f(1.5,-0.2,1.0001);
-        glEnd();
+        glTranslatef(-100, -1, 19.5);
+        DesenhaMuro(&muro);
     glPopMatrix();
-
-    // Lado de tras da casa
+    /// Desenha Casa do centro
     glPushMatrix();
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, _textureTijolo);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTranslatef(0,0,-6);
-        glBegin(GL_QUADS);  // Parede
-            glTexCoord3f(0.0,2.0,-1);  glVertex3f(-4,1,-2);
-            glTexCoord3f(4.0,2.0,-1);  glVertex3f(4,1,-2);
-            glTexCoord3f(4.0,0.0,-1);  glVertex3f(4,-1.5,-2);
-            glTexCoord3f(0.0,0.0,-1);  glVertex3f(-4,-1.5,-2);
-        glEnd();
-
-        glBindTexture(GL_TEXTURE_2D, _textureTelhado);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBegin(GL_QUADS);  // Telhado
-            glTexCoord3f(0.0,2.0,0); glVertex3f(-4.4,1.5,-0.5);
-            glTexCoord3f(4.0,2.0,0);glVertex3f(4.4,1.5,-0.5);
-            glTexCoord3f(4.0,0.0,-1.25); glVertex3f(4.4,0.7,-3.0);
-            glTexCoord3f(0.0,0.0,-1.25); glVertex3f(-4.4,0.7,-3.0);
-        glEnd();
-
-        glBindTexture(GL_TEXTURE_2D, _textureJanela);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBegin(GL_QUADS);  // Janela Esquerda
-            glTexCoord3f(0.0,1.0,-1.0001); glVertex3f(-1.5,0.2,-2.0001);
-            glTexCoord3f(1.0,1.0,-1.0001); glVertex3f(-0.75,0.2,-2.0001);
-            glTexCoord3f(1.0,0.0,-1.0001); glVertex3f(-0.75,-0.3,-2.0001);
-            glTexCoord3f(0.0,0.0,-1.0001); glVertex3f(-1.5,-0.3,-2.0001);
-        glEnd();
-
-        glBegin(GL_QUADS);  // Janela Direita
-            glTexCoord3f(0.0,1.0,1.0001); glVertex3f(1.5,0.2,-2.0001);
-            glTexCoord3f(1.0,1.0,1.0001); glVertex3f(0.75,0.2,-2.0001);
-            glTexCoord3f(1.0,0.0,1.0001); glVertex3f(0.75,-0.3,-2.0001);
-            glTexCoord3f(0.0,0.0,1.0001); glVertex3f(1.5,-0.3,-2.0001);
-        glEnd();
+        glTranslatef(-50,0,0);
+        DesenhaCasa();
     glPopMatrix();
-
-    // Lado direito da casa
+    /// Desenha Estrada
     glPushMatrix();
-        glBindTexture(GL_TEXTURE_2D, _textureTijolo);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTranslatef(0,0,-6);
-        glBegin(GL_QUADS);  // Parede
-            glTexCoord3f(0.0,2.0,1); glVertex3f(4,1,1);
-            glTexCoord3f(2.0,2.0,-1); glVertex3f(4,1,-2);
-            glTexCoord3f(2.0,0.0,-1); glVertex3f(4,-1.5,-2);
-            glTexCoord3f(0.0,0.0,1); glVertex3f(4,-1.5,1);
-        glEnd();
-
-        glBegin(GL_TRIANGLES);  // Parede de cima
-            glTexCoord3f(0.0,1.0,0); glVertex3f(4,1.5,-0.5);
-            glTexCoord3f(1.0,0.0,1); glVertex3f(4,1,1);
-            glTexCoord3f(-1.0,0.0,-1); glVertex3f(4,1,-2);
-        glEnd();
-    glPopMatrix();
-
-    // Lado Esquerdo da casa
-    glPushMatrix();
-        glBindTexture(GL_TEXTURE_2D, _textureTijolo);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTranslatef(0,0,-6);
-        glBegin(GL_QUADS);  // Parede
-            glTexCoord3f(0.0,2.0,1);    glVertex3f(-4,1,1);
-            glTexCoord3f(2.0,2.0,-1);    glVertex3f(-4,1,-2);
-            glTexCoord3f(2.0,0.0,-1);    glVertex3f(-4,-1.5,-2);
-            glTexCoord3f(0.0,0.0,1);    glVertex3f(-4,-1.5,1);
-        glEnd();
-
-        glBegin(GL_TRIANGLES);  // Parede de cima
-            glTexCoord3f(0.0,1.0,0);    glVertex3f(-4,1.5,-0.5);
-            glTexCoord3f(1.0,0.0,1);    glVertex3f(-4,1,1);
-            glTexCoord3f(-1.0,0.0,-1);  glVertex3f(-4,1,-2);
-        glEnd();
-    glPopMatrix();
-
-    // Estrada
-    glPushMatrix();
-        glTranslatef(0,-1.7, 1.5);
+        glTranslatef(-50,-1.7, 10);
         DesenhaEstrada();
     glPopMatrix();
-
-
-    // Terra
+    /// Desenha Casa da Esquerda
     glPushMatrix();
-        glTranslatef(0,-1.7, 20);
-        DesenhaTerra();
+        glTranslatef(-60,0,10);
+        glRotatef(90,0,50,0);
+        DesenhaCasa();
+    glPopMatrix();
+    /// Desenha Estrada
+    glPushMatrix();
+        glTranslatef(-50,-1.7, 10);
+        glRotatef(90,0,50,0);
+        DesenhaEstrada();
+    glPopMatrix();
+    /// Desenha Casa da Direita
+    glPushMatrix();
+        glTranslatef(-40,0,10);
+        glRotatef(90,0,-50,0);
+        DesenhaCasa();
+    glPopMatrix();
+    ///Desenha Muro Direita
+    glPushMatrix();
+        glTranslatef(-25, -1, 19.5);
+        DesenhaMuro(&muro2);
     glPopMatrix();
 
+///Conjunto de Casas do Centro
+    /// Desenha Casa do centro
     glPushMatrix();
-        // Habilita a definição da cor do material a partir da cor corrente
+        glTranslatef(0,0,0);
+        DesenhaCasa();
+    glPopMatrix();
+    /// Desenha Estrada
+    glPushMatrix();
+        glTranslatef(0,-1.7, 10);
+        DesenhaEstrada();
+    glPopMatrix();
+    /// Desenha Casa da Esquerda
+    glPushMatrix();
+        glTranslatef(-10,0,10);
+        glRotatef(90,0,50,0);
+        DesenhaCasa();
+    glPopMatrix();
+    /// Desenha Estrada
+    glPushMatrix();
+        glTranslatef(0,-1.7, 10);
+        glRotatef(90,0,50,0);
+        DesenhaEstrada();
+    glPopMatrix();
+    /// Desenha Casa da Direita
+    glPushMatrix();
+        glTranslatef(10,0,10);
+        glRotatef(90,0,-50,0);
+        DesenhaCasa();
+    glPopMatrix();
+
+    ///Desenha Muro Direita
+    glPushMatrix();
+        glTranslatef(25, -1, 19.5);
+        DesenhaMuro(&muro2);
+    glPopMatrix();
+
+///Conjuntos de CASAS da direita
+    /// Desenha Casa do centro
+    glPushMatrix();
+        glTranslatef(50,0,0);
+        DesenhaCasa();
+    glPopMatrix();
+    /// Desenha Estrada
+    glPushMatrix();
+        glTranslatef(50,-1.7, 10);
+        DesenhaEstrada();
+    glPopMatrix();
+    /// Desenha Casa da Esquerda
+    glPushMatrix();
+        glTranslatef(60,0,10);
+        glRotatef(90,0,50,0);
+        DesenhaCasa();
+    glPopMatrix();
+    /// Desenha Estrada
+    glPushMatrix();
+        glTranslatef(50,-1.7, 10);
+        glRotatef(90,0,50,0);
+        DesenhaEstrada();
+    glPopMatrix();
+    /// Desenha Casa da Direita
+    glPushMatrix();
+        glTranslatef(40,0,10);
+        glRotatef(90,0,-50,0);
+        DesenhaCasa();
+    glPopMatrix();
+
+    ///Desenha Muro Esquerda
+    glPushMatrix();
+        glTranslatef(100, -1, 19.5);
+        DesenhaMuro(&muro);
+    glPopMatrix();
+///FIM
+
+    /// Rodovia
+    glPushMatrix();
+        glTranslatef(0,-1.7, 30);
+        DesenhaRodovia();
+    glPopMatrix();
+
+    ///Desenha 2 Arvores
+
+    glPushMatrix();
+        /// Habilita a definição da cor do material a partir da cor corrente
         srand(GLUT_ELAPSED_TIME);
-        glTranslatef(-20.0, -1.4, -20.0);
-        desenhaArvore(4.0f,0.3f);
+        glTranslatef(-25.0, -1.4, 5.0);
+        DesenhaArvore(4.0f,0.3f);
     glPopMatrix();
-
 
     glPushMatrix();
-        // Habilita a definição da cor do material a partir da cor corrente
+        /// Habilita a definição da cor do material a partir da cor corrente
         srand(GLUT_ELAPSED_TIME);
-        glTranslatef(20.0, -1.4, -20.0);
-        desenhaArvore(4.0f,0.3f);
+        glTranslatef(25.0, -1.4, 5.0);
+        DesenhaArvore(4.0f,0.3f);
     glPopMatrix();
+
 
 
     ///Montanha Frente
@@ -546,8 +695,8 @@ void Desenha(void) {
           glBindTexture(GL_TEXTURE_2D, _textureMontanha);
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-          glTranslatef(0,5.0,-90.0);
-          glScalef(95.0,22.0,10.0);
+          glTranslatef(0,0.0,78.0);
+          glScalef(140.0,20.0,22.0);
           gluQuadricTexture(quad1,1);
           gluSphere(quad1,1.2,12,12);
     glPopMatrix();
@@ -557,10 +706,11 @@ void Desenha(void) {
           glBindTexture(GL_TEXTURE_2D, _textureMontanha);
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-          glTranslatef(-98,5.0,-25.0);
-          glScalef(10.0,15.0,85.0);
+          glTranslatef(-120,5.0,-90.0);
+          glScalef(20.0,15.0,90.0);
           gluQuadricTexture(quad1,1);
           gluSphere(quad1,1.2,12,12);
+
     glPopMatrix();
 
     ///Montanha Direita
@@ -568,83 +718,68 @@ void Desenha(void) {
           glBindTexture(GL_TEXTURE_2D, _textureMontanha);
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-          glTranslatef(98,5.0,-25.0);
-          glScalef(10.0,15.0,85.0);
+          glTranslatef(120,5.0,-90.0);
+          glScalef(30.0,15.0,90.0);
           gluQuadricTexture(quad1,1);
           gluSphere(quad1,1.2,12,12);
     glPopMatrix();
 
     ///Montanha traseira
     glPushMatrix();
-          glBindTexture(GL_TEXTURE_2D, _textureCeu);
+          glBindTexture(GL_TEXTURE_2D, _textureMontanha);
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-          glTranslatef(0,0.0,65.0);
-          glScalef(85.0,43.0,10.0);
+          glTranslatef(0,5.0,-80.0);
+          glScalef(120.0,8.0,50.0);
           gluQuadricTexture(quad1,1);
           gluSphere(quad1,1.2,12,12);
     glPopMatrix();
+
 
     glutSwapBuffers();
 }
 
 void Anima(int value)
 {
-	// Muda o angulo de rotação, e se chegar a 360, passa para zero
-	if(posLuz[luz][1] <= 30 && posLuz[luz][2] <= -90){
+	if(posLuz[luz][1] <= 0 && posLuz[luz][2] <= -180){
         posLuz[luz][1] += 1;
         posLuz[luz][2] += 1;
-        dirLuz[luz][0] = 0;
-        dirLuz[luz][1] = -1;
-        dirLuz[luz][2] = 0;
 	}
-    else if(posLuz[luz][1] <= 60 && posLuz[luz][2] <= -60){
+	else if(posLuz[luz][1] == 0 && posLuz[luz][2] <= -150){
+        posLuz[luz][2] += 1;
+	}
+	else if(posLuz[luz][1] <= 90 && posLuz[luz][2] <= -60){
         posLuz[luz][1] += 1;
         posLuz[luz][2] += 1;
-        dirLuz[luz][0] = 0;
-        dirLuz[luz][1] = -1;
-        dirLuz[luz][2] = 1;
-    }
-	else if(posLuz[luz][1] <= 90 && posLuz[luz][2] <= -30){
-        posLuz[luz][1] += 1;//Y do Sol
-        posLuz[luz][2] += 1;//Z do Sol
-        dirLuz[luz][0] = 0;
-        dirLuz[luz][1] = -1;
-        dirLuz[luz][2] = 0;
 	}
-	else if(posLuz[luz][1] <= 120 && posLuz[luz][2] <= 0){
+	else if(posLuz[luz][1] < 120 && posLuz[luz][2] <= -30){
         posLuz[luz][1] += 1;//Y do Sol
         posLuz[luz][2] += 1;//Z do Sol
-        dirLuz[luz][0] = 0;
-        dirLuz[luz][1] = -1;
-        dirLuz[luz][2] = -1;
         //printf("%f",posLuz[luz][2]);
 	}
-	else if(posLuz[luz][1] >= 90 && posLuz[luz][2] <= 30){
-        posLuz[luz][1] -= 1;//Y do Sol
+	else if(posLuz[luz][1] == 120 && posLuz[luz][2] <= 0){
         posLuz[luz][2] += 1;//Z do Sol
-        dirLuz[luz][0] = 0;
-        dirLuz[luz][1] = -1;
-        dirLuz[luz][2] = -1;
+        //printf("%f",posLuz[luz][2]);
 	}
-	else if(posLuz[luz][1] >= 60 && posLuz[luz][2] <= 60){
-        posLuz[luz][1] -= 1;//Y do Sol
-        posLuz[luz][2] += 1;//Z do Sol
-        dirLuz[luz][0] = 0;
-        dirLuz[luz][1] = -1;
-        dirLuz[luz][2] = 0;
-	}
-	else if(posLuz[luz][1] >= 30 && posLuz[luz][2] <= 90){
-        posLuz[luz][1] -= 1;//Y do Sol
-        posLuz[luz][2] += 1;//Z do Sol
-        dirLuz[luz][0] = 0;
-        dirLuz[luz][1] = -1;
-        dirLuz[luz][2] = 0;
-	}
-	else if(posLuz[luz][1] >= 0 && posLuz[luz][2] <= 120){
+	else if(posLuz[luz][1] > 120 && posLuz[luz][2] <= 30){
         posLuz[luz][1] -= 1;//Y do Sol
         posLuz[luz][2] += 1;//Z do Sol
 	}
+	else if(posLuz[luz][1] >= 90 && posLuz[luz][2] <= 60){
+        posLuz[luz][1] -= 1;//Y do Sol
+        posLuz[luz][2] += 1;//Z do Sol
+	}
+	else if(posLuz[luz][1] >= 0 && posLuz[luz][2] <= 150){
+        posLuz[luz][1] -= 1;//Y do Sol
+        posLuz[luz][2] += 1;//Z do Sol
+	}
+	else if(posLuz[luz][1] == 0 && posLuz[luz][2] <= 180){
+        posLuz[luz][2] += 1;//Z do Sol
+	}
+	else if(posLuz[luz][1] >= -30){
+        posLuz[luz][1] -= 1;//Y do Sol
+	}
+
 	glutPostRedisplay();
 	if(iniciar == true){
         glutTimerFunc(60, Anima, 1);
@@ -653,12 +788,7 @@ void Anima(int value)
 
 void Teclado (unsigned char key, int x, int y)
 {
-    printf("%d", key);
-    switch(key)
-	{
 
-
-	}
 
     EspecificaParametrosVisualizacao();
     glutPostRedisplay();
@@ -672,8 +802,11 @@ void TeclasEspeciais(int key, int x, int y)
            iniciar = !iniciar;
            break;
         case GLUT_KEY_UP:
-            obsY = 50;
-            obsZ = 20;
+            rotX = 90;
+            rotY = 90;
+            obsX = 0;
+            obsY = 0;
+            obsZ = 130;
             break;
         case GLUT_KEY_DOWN:
             obsY = 0;
@@ -779,8 +912,6 @@ void Inicializa()
 	glEnable(GL_LIGHTING);
 	// Habilita as fontes de luz
 	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHT1);
-	glEnable(GL_LIGHT2);
 	// Habilita o depth-buffering
 	glEnable(GL_DEPTH_TEST);
 
@@ -792,11 +923,11 @@ void Inicializa()
 
     // Inicializa as variáveis usadas para alterar a posição do
 	// observador virtual
-	rotX = 0;
+	rotX = 20;
 	rotY = 0;
 	obsX = 0;
-	obsY = 0;
-	obsZ = 5;
+	obsY = 5;
+	obsZ = 50;
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glMatrixMode(GL_PROJECTION);
@@ -816,8 +947,8 @@ void Inicializa()
 	image = loadBMP("C:/Users/danie/Desktop/Projeto-3d/texturas/pedras1.bmp");
 	_textureEstrada = loadTexture(image);
 
-	image = loadBMP("C:/Users/danie/Desktop/Projeto-3d/texturas/terra.bmp");
-	_textureTerra = loadTexture(image);
+	image = loadBMP("C:/Users/danie/Desktop/Projeto-3d/texturas/road.bmp");
+	_texturaRoad = loadTexture(image);
 
 	image = loadBMP("C:/Users/danie/Desktop/Projeto-3d/texturas/telhado.bmp");
 	_textureTelhado = loadTexture(image);
@@ -846,7 +977,7 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
     glutInit(&argc, argv);
 	glutInitWindowPosition(0,0);
-	glutInitWindowSize(640,480);
+	glutInitWindowSize(1366,768);
 	glutCreateWindow("Casa/Terreno");
 	glEnable(GL_DEPTH_TEST);
 
@@ -859,6 +990,8 @@ int main(int argc, char **argv)
 	glutKeyboardFunc(Teclado);
 	glutSpecialFunc(TeclasEspeciais);
 	glutDisplayFunc(Desenha);
+
+	//glutFullScreen();
 	Inicializa();
 
 	glutMainLoop();
