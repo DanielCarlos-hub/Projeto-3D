@@ -643,7 +643,7 @@ void Desenha(void) {
     /// Desenha Casa da Esquerda
     glPushMatrix();
         glTranslatef(60,0,10);
-        glRotatef(90,0,50,0);
+        glRotatef(90,0,-50,0);
         DesenhaCasa();
     glPopMatrix();
     /// Desenha Estrada
@@ -655,7 +655,7 @@ void Desenha(void) {
     /// Desenha Casa da Direita
     glPushMatrix();
         glTranslatef(40,0,10);
-        glRotatef(90,0,-50,0);
+        glRotatef(90,0,50,0);
         DesenhaCasa();
     glPopMatrix();
 
@@ -744,6 +744,7 @@ void Anima(int value)
 	if(posLuz[luz][1] <= 0 && posLuz[luz][2] <= -180){
         posLuz[luz][1] += 1;
         posLuz[luz][2] += 1;
+
 	}
 	else if(posLuz[luz][1] == 0 && posLuz[luz][2] <= -150){
         posLuz[luz][2] += 1;
@@ -751,6 +752,7 @@ void Anima(int value)
 	else if(posLuz[luz][1] <= 90 && posLuz[luz][2] <= -60){
         posLuz[luz][1] += 1;
         posLuz[luz][2] += 1;
+
 	}
 	else if(posLuz[luz][1] < 120 && posLuz[luz][2] <= -30){
         posLuz[luz][1] += 1;//Y do Sol
@@ -809,14 +811,24 @@ void TeclasEspeciais(int key, int x, int y)
             obsZ = 130;
             break;
         case GLUT_KEY_DOWN:
-            obsY = 0;
-            obsZ = 5;
+            rotX = 20;
+            rotY = 0;
+            obsX = 0;
+            obsY = 5;
+            obsZ = 50;
+            break;
+        case GLUT_KEY_LEFT:
+            rotX = 0;
+            rotY = 90;
+            obsX = -50;
+            obsY = 50;
+            obsZ = 80;
             break;
         case GLUT_KEY_RIGHT:
             rotX = 0;
             rotY = 90;
-            obsX = -30;
-            obsY = 70;
+            obsX = 30;
+            obsY = 50;
             obsZ = 80;
             break;
 	}
@@ -960,11 +972,11 @@ void Inicializa()
 	_textureCeu = loadTexture(image);
 
     quad1 = gluNewQuadric();
-	image = loadBMP("C:/Users/danie/Desktop/Projeto-Animacao-3D/texturas/montanha.bmp");
+	image = loadBMP("C:/Users/danie/Desktop/Projeto-3d/texturas/montanha.bmp");
 	_textureMontanha = loadTexture(image);
 
     quad2 = gluNewQuadric();
-	image = loadBMP("C:/Users/danie/Desktop/Projeto-Animacao-3D/texturas/sol.bmp");
+	image = loadBMP("C:/Users/danie/Desktop/Projeto-3d/texturas/sol.bmp");
 	_textureSol = loadTexture(image);
 
 
